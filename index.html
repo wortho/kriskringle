@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family Kris Kringle 2025</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        min-height: 100vh;
+        font-family: "Arial", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Christmas Tree */
+      .tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .star {
+        font-size: 40px;
+        color: #ffeb3b;
+        text-shadow: 0 0 10px #ffeb3b;
+        animation: twinkle 1.5s ease-in-out infinite alternate;
+        margin-bottom: 5px;
+      }
+
+      @keyframes twinkle {
+        0% {
+          opacity: 0.7;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+
+      .tree-section {
+        background: linear-gradient(45deg, #2e7d32, #4caf50);
+        position: relative;
+        margin: -5px 0;
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      }
+
+      .tree-section:nth-child(2) {
+        width: 80px;
+        height: 50px;
+      }
+
+      .tree-section:nth-child(3) {
+        width: 140px;
+        height: 60px;
+      }
+
+      .tree-section:nth-child(4) {
+        width: 200px;
+        height: 70px;
+      }
+
+      .tree-section:nth-child(5) {
+        width: 260px;
+        height: 80px;
+      }
+
+      .trunk {
+        width: 30px;
+        height: 40px;
+        background: linear-gradient(45deg, #5d4037, #8d6e63);
+        border-radius: 0 0 5px 5px;
+        margin-top: -10px;
+      }
+
+      /* Ornaments */
+      .ornament {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+
+      .ornament.red {
+        background: #f44336;
+        box-shadow: 0 0 5px #f44336;
+      }
+      .ornament.blue {
+        background: #2196f3;
+        box-shadow: 0 0 5px #2196f3;
+      }
+      .ornament.gold {
+        background: #ffeb3b;
+        box-shadow: 0 0 5px #ffeb3b;
+      }
+
+      @keyframes glow {
+        0% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Presents */
+      .presents-area {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+      }
+
+      .present {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease, filter 0.3s ease;
+        padding: 15px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        animation: clickMePulse 2s ease-in-out infinite;
+      }
+
+      .present:hover {
+        transform: scale(1.08);
+        filter: brightness(1.1);
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .present:active {
+        transform: scale(0.95);
+      }
+
+      @keyframes clickMePulse {
+        0%,
+        100% {
+          border-color: rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+        }
+        50% {
+          border-color: rgba(255, 255, 255, 0.6);
+          box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .present-box {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        position: relative;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        transition: box-shadow 0.3s ease;
+      }
+
+      .present:hover .present-box {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4),
+          0 0 20px rgba(255, 255, 255, 0.2);
+      }
+
+      .present-box.red {
+        background: linear-gradient(45deg, #c62828, #f44336);
+      }
+      .present-box.green {
+        background: linear-gradient(45deg, #2e7d32, #4caf50);
+      }
+      .present-box.blue {
+        background: linear-gradient(45deg, #1565c0, #2196f3);
+      }
+      .present-box.purple {
+        background: linear-gradient(45deg, #6a1b9a, #9c27b0);
+      }
+      .present-box.orange {
+        background: linear-gradient(45deg, #e65100, #ff9800);
+      }
+      .present-box.pink {
+        background: linear-gradient(45deg, #c2185b, #e91e63);
+      }
+      .present-box.teal {
+        background: linear-gradient(45deg, #00695c, #009688);
+      }
+      .present-box.yellow {
+        background: linear-gradient(45deg, #f57c00, #ffc107);
+      }
+      .present-box.indigo {
+        background: linear-gradient(45deg, #303f9f, #3f51b5);
+      }
+      .present-box.lime {
+        background: linear-gradient(45deg, #689f38, #8bc34a);
+      }
+      .present-box.cyan {
+        background: linear-gradient(45deg, #0097a7, #00bcd4);
+      }
+      .present-box.brown {
+        background: linear-gradient(45deg, #5d4037, #795548);
+      }
+
+      .ribbon-h {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 12px;
+        background: linear-gradient(45deg, #ffeb3b, #ffc107);
+        transform: translateY(-50%);
+      }
+
+      .ribbon-v {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 12px;
+        background: linear-gradient(45deg, #ffeb3b, #ffc107);
+        transform: translateX(-50%);
+      }
+
+      .bow {
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 30px;
+        background: linear-gradient(45deg, #d32f2f, #f44336);
+        border-radius: 50% 50% 0 0;
+      }
+
+      .bow::before,
+      .bow::after {
+        content: "";
+        position: absolute;
+        width: 15px;
+        height: 22px;
+        background: linear-gradient(45deg, #d32f2f, #f44336);
+        border-radius: 50%;
+      }
+
+      .bow::before {
+        left: -7px;
+        top: 3px;
+      }
+
+      .bow::after {
+        right: -7px;
+        top: 3px;
+      }
+
+      .present-name {
+        position: absolute;
+        bottom: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px 15px;
+        border-radius: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(255, 215, 0, 0.8);
+      }
+
+      /* Modal for opened present */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        animation: fadeIn 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 300px;
+        text-align: center;
+        position: relative;
+        animation: slideIn 0.3s;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        cursor: pointer;
+      }
+
+      .close:hover {
+        color: #000;
+      }
+
+      .revealed-name {
+        font-size: 24px;
+        font-weight: bold;
+        color: #d32f2f;
+        margin: 20px 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .celebration {
+        font-size: 40px;
+        margin: 20px 0;
+        animation: bounce 0.6s ease infinite alternate;
+      }
+
+      @keyframes bounce {
+        0% {
+          transform: scale(1) rotate(-5deg);
+        }
+        100% {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+
+      .title {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .access-denied {
+        color: white;
+        text-align: center;
+        padding: 50px 20px;
+        font-size: 18px;
+      }
+
+      .access-denied h2 {
+        color: #f44336;
+        margin-bottom: 20px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Mobile Responsive Styles */
+      @media screen and (max-width: 768px) {
+        .container {
+          padding: 10px;
+          max-width: 100vw;
+          overflow-x: hidden;
+        }
+
+        .title {
+          font-size: 22px;
+          margin-bottom: 20px;
+          padding: 0 10px;
+          line-height: 1.3;
+        }
+
+        /* Responsive Christmas Tree */
+        .star {
+          font-size: 32px;
+        }
+
+        .tree-section:nth-child(2) {
+          width: 60px;
+          height: 38px;
+        }
+
+        .tree-section:nth-child(3) {
+          width: 105px;
+          height: 45px;
+        }
+
+        .tree-section:nth-child(4) {
+          width: 150px;
+          height: 53px;
+        }
+
+        .tree-section:nth-child(5) {
+          width: 195px;
+          height: 60px;
+        }
+
+        .trunk {
+          width: 24px;
+          height: 32px;
+        }
+
+        /* Responsive Present */
+        .present-box {
+          width: 120px;
+          height: 120px;
+          border-radius: 10px;
+        }
+
+        .ribbon-h {
+          height: 14px;
+        }
+
+        .ribbon-v {
+          width: 14px;
+        }
+
+        .bow {
+          width: 36px;
+          height: 36px;
+          top: -10px;
+        }
+
+        .bow::before,
+        .bow::after {
+          width: 18px;
+          height: 26px;
+        }
+
+        .bow::before {
+          left: -8px;
+          top: 4px;
+        }
+
+        .bow::after {
+          right: -8px;
+          top: 4px;
+        }
+
+        .present-name {
+          font-size: 16px;
+          padding: 8px 15px;
+          bottom: -55px;
+        }
+
+        /* Responsive Modal */
+        .modal-content {
+          width: 90%;
+          max-width: 350px;
+          margin: 20% auto;
+          padding: 25px 20px;
+        }
+
+        .revealed-name {
+          font-size: 20px;
+          line-height: 1.4;
+        }
+
+        .celebration {
+          font-size: 35px;
+        }
+
+        .close {
+          font-size: 32px;
+          right: 12px;
+          top: 12px;
+          padding: 5px;
+        }
+
+        /* Access Denied responsive */
+        .access-denied {
+          padding: 30px 15px;
+          font-size: 16px;
+        }
+
+        .access-denied h2 {
+          font-size: 22px;
+        }
+
+        .access-denied p {
+          line-height: 1.5;
+          margin-bottom: 15px;
+        }
+      }
+
+      /* Extra small mobile devices */
+      @media screen and (max-width: 480px) {
+        .title {
+          font-size: 20px;
+          margin-bottom: 15px;
+        }
+
+        .star {
+          font-size: 28px;
+        }
+
+        .tree-section:nth-child(2) {
+          width: 50px;
+          height: 32px;
+        }
+
+        .tree-section:nth-child(3) {
+          width: 88px;
+          height: 38px;
+        }
+
+        .tree-section:nth-child(4) {
+          width: 125px;
+          height: 44px;
+        }
+
+        .tree-section:nth-child(5) {
+          width: 163px;
+          height: 50px;
+        }
+
+        .trunk {
+          width: 20px;
+          height: 28px;
+        }
+
+        .present-box {
+          width: 100px;
+          height: 100px;
+        }
+
+        .ribbon-h {
+          height: 12px;
+        }
+
+        .ribbon-v {
+          width: 12px;
+        }
+
+        .bow {
+          width: 30px;
+          height: 30px;
+          top: -8px;
+        }
+
+        .bow::before,
+        .bow::after {
+          width: 15px;
+          height: 22px;
+        }
+
+        .bow::before {
+          left: -7px;
+          top: 3px;
+        }
+
+        .bow::after {
+          right: -7px;
+          top: 3px;
+        }
+
+        .present-name {
+          font-size: 14px;
+          padding: 6px 12px;
+          bottom: -50px;
+        }
+
+        .modal-content {
+          margin: 25% auto;
+          padding: 20px 15px;
+        }
+
+        .revealed-name {
+          font-size: 18px;
+        }
+
+        .celebration {
+          font-size: 30px;
+        }
+      }
+
+      /* Touch-friendly improvements */
+      @media (pointer: coarse) {
+        .present {
+          padding: 10px;
+          margin: 10px;
+        }
+
+        .close {
+          padding: 8px;
+          min-width: 44px;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
+      /* Sparkle animation for dynamically created elements */
+      @keyframes sparkleAnim {
+        0% {
+          opacity: 1;
+          transform: scale(0) rotate(0deg);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1) rotate(180deg);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0) rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">🎄 Family Kris Kringle 2025 🎁</h1>
+      <div class="tree">
+        <div class="star">⭐</div>
+        <div class="tree-section">
+          <div class="ornament red" style="top: 30%; left: 30%"></div>
+          <div class="ornament blue" style="top: 50%; right: 30%"></div>
+        </div>
+        <div class="tree-section">
+          <div class="ornament gold" style="top: 20%; left: 25%"></div>
+          <div class="ornament red" style="top: 60%; right: 25%"></div>
+          <div class="ornament blue" style="top: 40%; left: 50%"></div>
+        </div>
+        <div class="tree-section">
+          <div class="ornament blue" style="top: 30%; left: 20%"></div>
+          <div class="ornament gold" style="top: 50%; right: 20%"></div>
+          <div class="ornament red" style="top: 70%; left: 40%"></div>
+          <div class="ornament blue" style="top: 25%; right: 40%"></div>
+        </div>
+        <div class="tree-section">
+          <div class="ornament red" style="top: 20%; left: 15%"></div>
+          <div class="ornament gold" style="top: 40%; left: 30%"></div>
+          <div class="ornament blue" style="top: 60%; right: 15%"></div>
+          <div class="ornament red" style="top: 35%; right: 30%"></div>
+          <div class="ornament gold" style="top: 75%; left: 50%"></div>
+        </div>
+        <div class="trunk"></div>
+      </div>
+      <div id="presentsArea" class="presents-area hidden">
+        <div id="userPresent" class="present" onclick="openPresent()">
+          <div id="presentBox" class="present-box red">
+            <div class="ribbon-h"></div>
+            <div class="ribbon-v"></div>
+            <div class="bow"></div>
+          </div>
+          <div id="presentName" class="present-name"></div>
+        </div>
+      </div>
+      <div id="accessDenied" class="access-denied hidden">
+        <h2>🎁 Access Required</h2>
+        <p>You need a special link to access your Kris Kringle present!</p>
+        <p>Please check your personal link that was shared with you.</p>
+        <p>If you don't have your link, please contact the organizer.</p>
+      </div>
+    </div>
+
+    <!-- Modal for opened presents -->
+    <div id="presentModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="celebration">🎉</div>
+        <h2 id="modalTitle">Kris Kringle</h2>
+        <div class="revealed-name" id="revealedName"></div>
+        <div class="celebration">🎁</div>
+      </div>
+    </div>
+
+    <script>
+      // Present data with gift recipients and unique access codes
+      const presents = {
+        present1: {
+          name: "Alison",
+          hiddenName: "Phil & Dea",
+          code: "XK9P2M",
+        },
+        present2: {
+          name: "Anne",
+          hiddenName: "Alison",
+          code: "H7R5N3",
+        },
+        present3: {
+          name: "David",
+          hiddenName: "Mark & William",
+          code: "T4W8L1",
+        },
+        present4: {
+          name: "Joanne",
+          hiddenName: "Karen & Evie",
+          code: "B6M9Q2",
+        },
+        present5: {
+          name: "Karen",
+          hiddenName: "Sarah & Edward",
+          code: "F3Y7K5",
+        },
+        present6: {
+          name: "Mark",
+          hiddenName: "Mum & Tilly",
+          code: "P8R1V4",
+        },
+        present7: {
+          name: "Mum",
+          hiddenName: "Scott & Hannah",
+          code: "Z2N6D9",
+        },
+        present8: {
+          name: "Paul",
+          hiddenName: "Anne",
+          code: "S5Q3G7",
+        },
+        present9: {
+          name: "Pernille",
+          hiddenName: "Paul",
+          code: "J9L2C8",
+        },
+        present10: {
+          name: "Phil",
+          hiddenName: "Pernille",
+          code: "A1K4X6",
+        },
+        present11: {
+          name: "Sarah",
+          hiddenName: "Joanne & Lucy",
+          code: "V7E3W9",
+        },
+        present12: {
+          name: "Scott",
+          hiddenName: "David",
+          code: "M4U8R2",
+        },
+      };
+
+      // Function to generate message from hiddenName
+      function generateMessage(hiddenName) {
+        return `You should give a gift to ${hiddenName}!`;
+      }
+
+      // Get URL parameters using modern URLSearchParams API
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name) || "";
+      }
+
+      // Check access and initialize page
+      function initializePage() {
+        const userCode = getUrlParameter("code");
+        const authorizedPresent = Object.entries(presents).find(
+          ([_, present]) => present.code === userCode
+        );
+
+        if (authorizedPresent) {
+          showAuthorizedPresent(authorizedPresent[0]); // presentId
+        } else {
+          showAccessDenied();
+        }
+      }
+
+      function showAuthorizedPresent(presentId) {
+        const present = presents[presentId];
+
+        // Update the present with user's information
+        const presentName = document.getElementById("presentName");
+        const presentBox = document.getElementById("presentBox");
+
+        presentName.textContent = present.name;
+        presentBox.className = `present-box ${getPresentColor(presentId)}`;
+
+        // Store the present ID for opening using dataset API
+        document.getElementById("userPresent").dataset.presentId = presentId;
+
+        // Show the presents area and hide access denied
+        document.getElementById("presentsArea").classList.remove("hidden");
+        document.getElementById("accessDenied").classList.add("hidden");
+      }
+
+      function getPresentColor(presentId) {
+        const colors = [
+          "red",
+          "green",
+          "blue",
+          "purple",
+          "orange",
+          "pink",
+          "teal",
+          "yellow",
+          "indigo",
+          "lime",
+          "cyan",
+          "brown",
+        ];
+        const index = parseInt(presentId.replace("present", "")) - 1;
+        return colors[index % colors.length];
+      }
+
+      function showAccessDenied() {
+        // Hide the presents area and show access denied
+        document.getElementById("presentsArea").classList.add("hidden");
+        document.getElementById("accessDenied").classList.remove("hidden");
+      }
+
+      function openPresent() {
+        const presentElement = document.getElementById("userPresent");
+        const presentId = presentElement.dataset.presentId; // Use dataset API
+        const present = presents[presentId];
+        const modal = document.getElementById("presentModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const revealedName = document.getElementById("revealedName");
+
+        modalTitle.textContent = present.name;
+        revealedName.textContent = generateMessage(present.hiddenName);
+
+        modal.style.display = "block";
+
+        // Add some sparkle effect
+        createSparkles();
+      }
+
+      function closeModal() {
+        document.getElementById("presentModal").style.display = "none";
+      }
+
+      // Close modal when clicking outside of it - use arrow function
+      window.onclick = (event) => {
+        const modal = document.getElementById("presentModal");
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      // Create sparkle effect when opening presents
+      function createSparkles() {
+        // Use Array.from for cleaner iteration
+        Array.from({ length: 20 }, (_, i) => {
+          setTimeout(() => {
+            const sparkle = document.createElement("div");
+            sparkle.innerHTML = "✨";
+
+            // Use Object.assign for cleaner style setting
+            Object.assign(sparkle.style, {
+              position: "fixed",
+              left: `${Math.random() * window.innerWidth}px`,
+              top: `${Math.random() * window.innerHeight}px`,
+              fontSize: `${Math.random() * 20 + 10}px`,
+              zIndex: "1001",
+              pointerEvents: "none",
+              animation: "sparkleAnim 1s ease-out forwards",
+            });
+
+            document.body.appendChild(sparkle);
+
+            setTimeout(() => sparkle.remove(), 1000);
+          }, i * 50);
+        });
+      }
+
+      // Keyboard support for accessibility
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
+
+      // Initialize the page when it loads
+      document.addEventListener("DOMContentLoaded", initializePage);
+    </script>
+  </body>
+</html>
