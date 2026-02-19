@@ -715,18 +715,19 @@
       // children  – this participant's own children (by first name).
       //             Used to enforce the rule: a parent never gives to their own child.
       const family = {
+        //              household                   children (own – can never receive gift from parent)
         Alison:   { household: [],           children: [] },
-        Anne:     { household: [],           children: [] },
-        David:    { household: [],           children: ["Dea", "Tilly"] },
-        Joanne:   { household: ["Lucy"],     children: [] },
-        Karen:    { household: ["Evie"],     children: ["Hannah"] },
-        Mark:     { household: ["William"],  children: [] },
+        Anne:     { household: [],           children: ["Edward", "Lucy"] },   // co-parent: Mark
+        David:    { household: ["Dea"],      children: ["Dea", "Tilly"] },     // partner: Pernille
+        Joanne:   { household: ["Evie"],     children: [] },
+        Karen:    { household: ["Lucy"],     children: ["Hannah"] },            // co-parent: Scott
+        Mark:     { household: ["William"],  children: ["Edward", "Lucy"] },   // co-parent: Anne
         Mum:      { household: ["Tilly"],    children: [] },
         Paul:     { household: [],           children: [] },
-        Pernille: { household: [],           children: ["Dea", "Tilly"] },
-        Phil:     { household: ["Dea"],      children: [] },
-        Sarah:    { household: ["Edward"],   children: [] },
-        Scott:    { household: ["Hannah"],   children: ["Hannah"] },
+        Pernille: { household: [],           children: ["Dea", "Tilly"] },     // partner: David
+        Phil:     { household: [],           children: ["William", "Evie"] },  // partner: Dea; co-parent: Sarah
+        Sarah:    { household: ["Edward"],   children: ["William", "Evie"] },  // co-parent: Phil
+        Scott:    { household: ["Hannah"],   children: ["Hannah"] },            // co-parent: Karen
       };
 
       // ── Gift assignments ──────────────────────────────────────────────
