@@ -709,24 +709,22 @@
     <script>
       // ── Family configuration ──────────────────────────────────────────
       // Edit this section whenever family circumstances change.
-      //
-      // partner  – their romantic partner; neither can be assigned to give to the other.
-      // children – their own children (informational).
-      const family = {
-        //              partner        children
-        Alison:   { partner: null,       children: [] },
-        Anne:     { partner: "Mark",     children: ["Edward", "Lucy"] },
-        David:    { partner: "Pernille", children: ["Dea", "Tilly"] },
-        Joanne:   { partner: "Paul",     children: [] },
-        Karen:    { partner: "Scott",    children: ["Hannah"] },
-        Mark:     { partner: "Anne",     children: ["Edward", "Lucy"] },
-        Mum:      { partner: null,       children: [] },
-        Paul:     { partner: "Joanne",   children: [] },
-        Pernille: { partner: "David",    children: ["Dea", "Tilly"] },
-        Phil:     { partner: "Sarah",    children: ["William", "Evie"] },
-        Sarah:    { partner: "Phil",     children: ["William", "Evie"] },
-        Scott:    { partner: "Karen",    children: ["Hannah"] },
-      };
+      // Each household lists its adult participants and any non-participant
+      // children. Adults in the same household cannot give to one another.
+      const households = [
+        { adults: ["Phil", "Sarah"],     children: ["William", "Evie"] },
+        { adults: ["Anne", "Mark"],      children: ["Edward", "Lucy"]  },
+        { adults: ["David", "Pernille"], children: ["Dea", "Tilly"]    },
+        { adults: ["Joanne", "Paul"],    children: []                   },
+        { adults: ["Karen", "Scott"],    children: ["Hannah"]           },
+        { adults: ["Alison"],            children: []                   },
+        { adults: ["Mum"],               children: []                   },
+      ];
+
+      // Fast lookup: participant name → household object
+      const householdOf = Object.fromEntries(
+        households.flatMap(h => h.adults.map(a => [a, h]))
+      );
 
       // ── Participants ──────────────────────────────────────────────────
       // Stable per-person data: name and unique URL access code.
@@ -771,13 +769,11 @@
       }
 
       // ── Assignment validation ─────────────────────────────────────────
-      // Rules checked for every giver → recipient pair:
-      //   1. No self-assignment
-      //   2. Partners don't give to each other
+      // A pairing is invalid if both people share a household (covers
+      // self-assignment and couples in one check).
       function isValidAssignment(assignment) {
         for (const [giver, recipient] of Object.entries(assignment)) {
-          if (giver === recipient) return false;
-          if (family[giver].partner === recipient) return false;
+          if (householdOf[giver] === householdOf[recipient]) return false;
         }
         return true;
       }
