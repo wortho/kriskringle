@@ -707,73 +707,59 @@
     </div>
 
     <script>
-      // Present data with gift recipients and unique access codes
-      const presents = {
-        present1: {
-          name: "Alison",
-          hiddenName: "Pernille",
-          code: "R3M7PK",
-        },
-        present2: {
-          name: "Anne",
-          hiddenName: "Phil & Dea",
-          code: "W9X4TN",
-        },
-        present3: {
-          name: "David",
-          hiddenName: "Mum & Tilly",
-          code: "L6Q2HV",
-        },
-        present4: {
-          name: "Joanne",
-          hiddenName: "Sarah & Edward",
-          code: "C8N5JY",
-        },
-        present5: {
-          name: "Karen",
-          hiddenName: "Joanne & Lucy",
-          code: "E1B9KZ",
-        },
-        present6: {
-          name: "Mark",
-          hiddenName: "Scott & Hannah",
-          code: "G4S7UF",
-        },
-        present7: {
-          name: "Mum",
-          hiddenName: "David",
-          code: "D2W8MR",
-        },
-        present8: {
-          name: "Paul",
-          hiddenName: "Alison",
-          code: "N5L3QX",
-        },
-        present9: {
-          name: "Pernille",
-          hiddenName: "Anne",
-          code: "T7C1YP",
-        },
-        present10: {
-          name: "Phil",
-          hiddenName: "Paul",
-          code: "H6J4AK",
-        },
-        present11: {
-          name: "Sarah",
-          hiddenName: "Karen & Evie",
-          code: "U9E2VB",
-        },
-        present12: {
-          name: "Scott",
-          hiddenName: "Mark & William",
-          code: "F3R8WD",
-        },
+      // ── Family configuration ──────────────────────────────────────────
+      // Edit this section whenever family circumstances change.
+      //
+      // household – additional family members who share this participant's gift
+      //             (they appear in the recipient display name, e.g. "Phil & Dea")
+      // children  – this participant's own children (by first name).
+      //             Used to enforce the rule: a parent never gives to their own child.
+      const family = {
+        Alison:   { household: [],           children: [] },
+        Anne:     { household: [],           children: [] },
+        David:    { household: [],           children: ["Dea", "Tilly"] },
+        Joanne:   { household: ["Lucy"],     children: [] },
+        Karen:    { household: ["Evie"],     children: ["Hannah"] },
+        Mark:     { household: ["William"],  children: [] },
+        Mum:      { household: ["Tilly"],    children: [] },
+        Paul:     { household: [],           children: [] },
+        Pernille: { household: [],           children: ["Dea", "Tilly"] },
+        Phil:     { household: ["Dea"],      children: [] },
+        Sarah:    { household: ["Edward"],   children: [] },
+        Scott:    { household: ["Hannah"],   children: ["Hannah"] },
       };
 
-      // Function to generate message from hiddenName
-      function generateMessage(hiddenName) {
-        return `You should give a gift to ${hiddenName}!`;
+      // ── Gift assignments ──────────────────────────────────────────────
+      // name   – the participant who receives this URL
+      // giftTo – key into `family` above: who they must buy for
+      // code   – unique URL access code for this participant
+      //
+      // Rule enforced: no participant is assigned a giftTo whose household
+      // contains any of that participant's own children.
+      const presents = {
+        present1:  { name: "Alison",   giftTo: "Pernille", code: "R3M7PK" },
+        present2:  { name: "Anne",     giftTo: "Phil",     code: "W9X4TN" },
+        present3:  { name: "David",    giftTo: "Scott",    code: "L6Q2HV" }, // swapped with Mark (Tilly conflict)
+        present4:  { name: "Joanne",   giftTo: "Sarah",    code: "C8N5JY" },
+        present5:  { name: "Karen",    giftTo: "Joanne",   code: "E1B9KZ" },
+        present6:  { name: "Mark",     giftTo: "Mum",      code: "G4S7UF" }, // swapped with David
+        present7:  { name: "Mum",      giftTo: "David",    code: "D2W8MR" },
+        present8:  { name: "Paul",     giftTo: "Alison",   code: "N5L3QX" },
+        present9:  { name: "Pernille", giftTo: "Anne",     code: "T7C1YP" },
+        present10: { name: "Phil",     giftTo: "Paul",     code: "H6J4AK" },
+        present11: { name: "Sarah",    giftTo: "Karen",    code: "U9E2VB" },
+        present12: { name: "Scott",    giftTo: "Mark",     code: "F3R8WD" },
+      };
+
+      // Build the full recipient display name from the family config
+      function getRecipientDisplayName(giftTo) {
+        const f = family[giftTo];
+        return [giftTo, ...f.household].join(" & ");
+      }
+
+      // Function to generate the gift message
+      function generateMessage(giftTo) {
+        return `You should give a gift to ${getRecipientDisplayName(giftTo)}!`;
       }
 
       // Get URL parameters using modern URLSearchParams API
@@ -848,7 +834,7 @@
         const revealedName = document.getElementById("revealedName");
 
         modalTitle.textContent = present.name;
-        revealedName.textContent = generateMessage(present.hiddenName);
+        revealedName.textContent = generateMessage(present.giftTo);
 
         modal.style.display = "block";
 
