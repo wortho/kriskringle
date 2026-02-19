@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Family Kris Kringle 2026</title>
+    <title>Family Kris Kringle</title>
     <style>
       body {
         margin: 0;
@@ -650,7 +650,7 @@
   </head>
   <body>
     <div class="container">
-      <h1 class="title">🎄 Family Kris Kringle 2026 🎁</h1>
+      <h1 id="pageTitle" class="title">🎄 Family Kris Kringle 🎁</h1>
       <div class="tree">
         <div class="star">⭐</div>
         <div class="tree-section">
@@ -807,6 +807,9 @@
 
       // Check access and initialize page
       function initializePage() {
+        document.title = `Family Kris Kringle ${YEAR}`;
+        document.getElementById("pageTitle").textContent = `🎄 Family Kris Kringle ${YEAR} 🎁`;
+
         const userCode = getUrlParameter("code");
         const participant = participants.find((p) => p.code === userCode);
 
