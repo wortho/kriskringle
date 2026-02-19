@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Family Kris Kringle 2025</title>
+    <title>Family Kris Kringle</title>
     <style>
       body {
         margin: 0;
@@ -650,7 +650,7 @@
   </head>
   <body>
     <div class="container">
-      <h1 class="title">🎄 Family Kris Kringle 2025 🎁</h1>
+      <h1 id="pageTitle" class="title">🎄 Family Kris Kringle 🎁</h1>
       <div class="tree">
         <div class="star">⭐</div>
         <div class="tree-section">
@@ -707,73 +707,96 @@
     </div>
 
     <script>
-      // Present data with gift recipients and unique access codes
-      const presents = {
-        present1: {
-          name: "Alison",
-          hiddenName: "Phil & Dea",
-          code: "XK9P2M",
-        },
-        present2: {
-          name: "Anne",
-          hiddenName: "Alison",
-          code: "H7R5N3",
-        },
-        present3: {
-          name: "David",
-          hiddenName: "Mark & William",
-          code: "T4W8L1",
-        },
-        present4: {
-          name: "Joanne",
-          hiddenName: "Karen & Evie",
-          code: "B6M9Q2",
-        },
-        present5: {
-          name: "Karen",
-          hiddenName: "Sarah & Edward",
-          code: "F3Y7K5",
-        },
-        present6: {
-          name: "Mark",
-          hiddenName: "Mum & Tilly",
-          code: "P8R1V4",
-        },
-        present7: {
-          name: "Mum",
-          hiddenName: "Scott & Hannah",
-          code: "Z2N6D9",
-        },
-        present8: {
-          name: "Paul",
-          hiddenName: "Anne",
-          code: "S5Q3G7",
-        },
-        present9: {
-          name: "Pernille",
-          hiddenName: "Paul",
-          code: "J9L2C8",
-        },
-        present10: {
-          name: "Phil",
-          hiddenName: "Pernille",
-          code: "A1K4X6",
-        },
-        present11: {
-          name: "Sarah",
-          hiddenName: "Joanne & Lucy",
-          code: "V7E3W9",
-        },
-        present12: {
-          name: "Scott",
-          hiddenName: "David",
-          code: "M4U8R2",
-        },
-      };
+      // ── Family configuration ──────────────────────────────────────────
+      // Edit this section whenever family circumstances change.
+      // Each household lists its adult participants and any non-participant
+      // children. Adults in the same household cannot give to one another.
+      const households = [
+        { adults: ["Phil", "Sarah"],     children: ["William", "Evie"] },
+        { adults: ["Anne", "Mark"],      children: ["Edward", "Lucy"]  },
+        { adults: ["David", "Pernille"], children: ["Dea", "Tilly"]    },
+        { adults: ["Joanne", "Paul"],    children: []                   },
+        { adults: ["Karen", "Scott"],    children: ["Hannah"]           },
+        { adults: ["Alison"],            children: []                   },
+        { adults: ["Mum"],               children: []                   },
+      ];
 
-      // Function to generate message from hiddenName
-      function generateMessage(hiddenName) {
-        return `You should give a gift to ${hiddenName}!`;
+      // Fast lookup: participant name → household object
+      const householdOf = Object.fromEntries(
+        households.flatMap(h => h.adults.map(a => [a, h]))
+      );
+
+      // ── Participants ──────────────────────────────────────────────────
+      // Stable per-person data: name and unique URL access code.
+      // To start a new year: update YEAR only – assignments are generated
+      // automatically and deterministically from the year as a seed.
+      const YEAR = 2026;
+
+      const participants = [
+        { name: "Alison",   code: "R3M7PK" },
+        { name: "Anne",     code: "W9X4TN" },
+        { name: "David",    code: "L6Q2HV" },
+        { name: "Joanne",   code: "C8N5JY" },
+        { name: "Karen",    code: "E1B9KZ" },
+        { name: "Mark",     code: "G4S7UF" },
+        { name: "Mum",      code: "D2W8MR" },
+        { name: "Paul",     code: "N5L3QX" },
+        { name: "Pernille", code: "T7C1YP" },
+        { name: "Phil",     code: "H6J4AK" },
+        { name: "Sarah",    code: "U9E2VB" },
+        { name: "Scott",    code: "F3R8WD" },
+      ];
+
+      // ── Seeded RNG (mulberry32) ───────────────────────────────────────
+      // Returns a deterministic pseudo-random function for the given seed.
+      function createRng(seed) {
+        return function () {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function seededShuffle(arr, rng) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // ── Assignment validation ─────────────────────────────────────────
+      // A pairing is invalid if both people share a household (covers
+      // self-assignment and couples in one check).
+      function isValidAssignment(assignment) {
+        for (const [giver, recipient] of Object.entries(assignment)) {
+          if (householdOf[giver] === householdOf[recipient]) return false;
+        }
+        return true;
+      }
+
+      // ── Gift assignment generator ─────────────────────────────────────
+      // Produces a valid set of gift assignments deterministically from the
+      // year seed. The same year always yields the same assignments.
+      function assignGifts(year) {
+        const rng = createRng(year);
+        const names = participants.map((p) => p.name);
+        for (let attempt = 0; attempt < 10000; attempt++) {
+          const shuffled = seededShuffle(names, rng);
+          const assignment = Object.fromEntries(
+            names.map((name, i) => [name, shuffled[i]])
+          );
+          if (isValidAssignment(assignment)) return assignment;
+        }
+        throw new Error(`No valid gift assignment found for year ${year}`);
+      }
+
+      // Function to generate the gift message
+      function generateMessage(giftTo) {
+        return `You should give a gift to ${giftTo}!`;
       }
 
       // Get URL parameters using modern URLSearchParams API
@@ -784,37 +807,38 @@
 
       // Check access and initialize page
       function initializePage() {
-        const userCode = getUrlParameter("code");
-        const authorizedPresent = Object.entries(presents).find(
-          ([_, present]) => present.code === userCode
-        );
+        document.title = `Family Kris Kringle ${YEAR}`;
+        document.getElementById("pageTitle").textContent = `🎄 Family Kris Kringle ${YEAR} 🎁`;
 
-        if (authorizedPresent) {
-          showAuthorizedPresent(authorizedPresent[0]); // presentId
+        const userCode = getUrlParameter("code");
+        const participant = participants.find((p) => p.code === userCode);
+
+        if (participant) {
+          const assignments = assignGifts(YEAR);
+          showAuthorizedPresent(participant, assignments[participant.name]);
         } else {
           showAccessDenied();
         }
       }
 
-      function showAuthorizedPresent(presentId) {
-        const present = presents[presentId];
-
-        // Update the present with user's information
+      function showAuthorizedPresent(participant, giftTo) {
         const presentName = document.getElementById("presentName");
         const presentBox = document.getElementById("presentBox");
 
-        presentName.textContent = present.name;
-        presentBox.className = `present-box ${getPresentColor(presentId)}`;
+        presentName.textContent = participant.name;
+        const index = participants.findIndex((p) => p.name === participant.name);
+        presentBox.className = `present-box ${getPresentColor(index)}`;
 
-        // Store the present ID for opening using dataset API
-        document.getElementById("userPresent").dataset.presentId = presentId;
+        // Store assignment for use when the present is opened
+        document.getElementById("userPresent").dataset.participantName =
+          participant.name;
+        document.getElementById("userPresent").dataset.giftTo = giftTo;
 
-        // Show the presents area and hide access denied
         document.getElementById("presentsArea").classList.remove("hidden");
         document.getElementById("accessDenied").classList.add("hidden");
       }
 
-      function getPresentColor(presentId) {
+      function getPresentColor(index) {
         const colors = [
           "red",
           "green",
@@ -829,7 +853,6 @@
           "cyan",
           "brown",
         ];
-        const index = parseInt(presentId.replace("present", "")) - 1;
         return colors[index % colors.length];
       }
 
@@ -841,14 +864,14 @@
 
       function openPresent() {
         const presentElement = document.getElementById("userPresent");
-        const presentId = presentElement.dataset.presentId; // Use dataset API
-        const present = presents[presentId];
+        const participantName = presentElement.dataset.participantName;
+        const giftTo = presentElement.dataset.giftTo;
         const modal = document.getElementById("presentModal");
         const modalTitle = document.getElementById("modalTitle");
         const revealedName = document.getElementById("revealedName");
 
-        modalTitle.textContent = present.name;
-        revealedName.textContent = generateMessage(present.hiddenName);
+        modalTitle.textContent = participantName;
+        revealedName.textContent = generateMessage(giftTo);
 
         modal.style.display = "block";
 
