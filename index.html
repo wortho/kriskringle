@@ -702,6 +702,7 @@
         <div class="celebration">🎉</div>
         <h2 id="modalTitle">Kris Kringle</h2>
         <div class="revealed-name" id="revealedName"></div>
+        <div class="revealed-name" id="childRevealedName"></div>
         <div class="celebration">🎁</div>
       </div>
     </div>
@@ -794,6 +795,32 @@
         throw new Error(`No valid gift assignment found for year ${year}`);
       }
 
+      // ── Child gift assignment generator ───────────────────────────────
+      // Assigns each child to exactly one adult who is not their parent.
+      // Uses year+1 as seed so the sequence is independent of the adult draw.
+      // Returns an object keyed by adult name; only adults assigned a child appear.
+      function assignChildren(year) {
+        const rng = createRng(year + 1);
+        const children = households.flatMap(h =>
+          h.children.map(c => ({ name: c, household: h }))
+        );
+        const shuffledChildren = seededShuffle(children, rng);
+        const shuffledAdults = seededShuffle(participants.map(p => p.name), rng);
+
+        const childAssignment = {};
+        const assignedAdults = new Set();
+        for (const child of shuffledChildren) {
+          for (const adult of shuffledAdults) {
+            if (!assignedAdults.has(adult) && householdOf[adult] !== child.household) {
+              childAssignment[adult] = child.name;
+              assignedAdults.add(adult);
+              break;
+            }
+          }
+        }
+        return childAssignment;
+      }
+
       // Function to generate the gift message
       function generateMessage(giftTo) {
         return `You should give a gift to ${giftTo}!`;
@@ -815,13 +842,14 @@
 
         if (participant) {
           const assignments = assignGifts(YEAR);
-          showAuthorizedPresent(participant, assignments[participant.name]);
+          const childAssignments = assignChildren(YEAR);
+          showAuthorizedPresent(participant, assignments[participant.name], childAssignments[participant.name] || "");
         } else {
           showAccessDenied();
         }
       }
 
-      function showAuthorizedPresent(participant, giftTo) {
+      function showAuthorizedPresent(participant, giftTo, childGiftTo) {
         const presentName = document.getElementById("presentName");
         const presentBox = document.getElementById("presentBox");
 
@@ -833,6 +861,7 @@
         document.getElementById("userPresent").dataset.participantName =
           participant.name;
         document.getElementById("userPresent").dataset.giftTo = giftTo;
+        document.getElementById("userPresent").dataset.childGiftTo = childGiftTo;
 
         document.getElementById("presentsArea").classList.remove("hidden");
         document.getElementById("accessDenied").classList.add("hidden");
@@ -866,12 +895,17 @@
         const presentElement = document.getElementById("userPresent");
         const participantName = presentElement.dataset.participantName;
         const giftTo = presentElement.dataset.giftTo;
+        const childGiftTo = presentElement.dataset.childGiftTo;
         const modal = document.getElementById("presentModal");
         const modalTitle = document.getElementById("modalTitle");
         const revealedName = document.getElementById("revealedName");
+        const childRevealedName = document.getElementById("childRevealedName");
 
         modalTitle.textContent = participantName;
         revealedName.textContent = generateMessage(giftTo);
+        childRevealedName.textContent = childGiftTo
+          ? `You should also give a gift to ${childGiftTo}!`
+          : "";
 
         modal.style.display = "block";
 
