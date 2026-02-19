@@ -710,24 +710,22 @@
       // ── Family configuration ──────────────────────────────────────────
       // Edit this section whenever family circumstances change.
       //
-      // household – additional family members who share this participant's gift
-      //             (they appear in the recipient display name, e.g. "Phil & Dea")
-      // children  – this participant's own children (by first name).
-      //             Used to enforce the rule: a parent never gives to their own child.
+      // partner  – their romantic partner; neither can be assigned to give to the other.
+      // children – their own children (informational).
       const family = {
-        //              partner        household                   children (own – can never receive gift from parent)
-        Alison:   { partner: null,       household: [],           children: [] },
-        Anne:     { partner: null,       household: [],           children: ["Edward", "Lucy"] },  // co-parent: Mark
-        David:    { partner: "Pernille", household: ["Dea"],      children: ["Dea", "Tilly"] },
-        Joanne:   { partner: "Paul",      household: ["Evie"],     children: [] },
-        Karen:    { partner: "Scott",    household: ["Lucy"],     children: ["Hannah"] },
-        Mark:     { partner: null,       household: ["William"],  children: ["Edward", "Lucy"] },  // co-parent: Anne
-        Mum:      { partner: null,       household: ["Tilly"],    children: [] },
-        Paul:     { partner: "Joanne",    household: [],           children: [] },
-        Pernille: { partner: "David",    household: [],           children: ["Dea", "Tilly"] },
-        Phil:     { partner: null,       household: [],           children: ["William", "Evie"] }, // partner Dea is not a participant; co-parent: Sarah
-        Sarah:    { partner: null,       household: ["Edward"],   children: ["William", "Evie"] }, // co-parent: Phil
-        Scott:    { partner: "Karen",    household: ["Hannah"],   children: ["Hannah"] },
+        //              partner        children
+        Alison:   { partner: null,       children: [] },
+        Anne:     { partner: "Mark",     children: ["Edward", "Lucy"] },
+        David:    { partner: "Pernille", children: ["Dea", "Tilly"] },
+        Joanne:   { partner: "Paul",     children: [] },
+        Karen:    { partner: "Scott",    children: ["Hannah"] },
+        Mark:     { partner: "Anne",     children: ["Edward", "Lucy"] },
+        Mum:      { partner: null,       children: [] },
+        Paul:     { partner: "Joanne",   children: [] },
+        Pernille: { partner: "David",    children: ["Dea", "Tilly"] },
+        Phil:     { partner: "Sarah",    children: ["William", "Evie"] },
+        Sarah:    { partner: "Phil",     children: ["William", "Evie"] },
+        Scott:    { partner: "Karen",    children: ["Hannah"] },
       };
 
       // ── Participants ──────────────────────────────────────────────────
@@ -776,16 +774,10 @@
       // Rules checked for every giver → recipient pair:
       //   1. No self-assignment
       //   2. Partners don't give to each other
-      //   3. A parent doesn't give to a recipient whose household contains
-      //      any of that parent's own children
       function isValidAssignment(assignment) {
         for (const [giver, recipient] of Object.entries(assignment)) {
           if (giver === recipient) return false;
           if (family[giver].partner === recipient) return false;
-          const giverChildren = family[giver].children;
-          const recipientHousehold = family[recipient].household;
-          if (giverChildren.some((child) => recipientHousehold.includes(child)))
-            return false;
         }
         return true;
       }
@@ -806,15 +798,9 @@
         throw new Error(`No valid gift assignment found for year ${year}`);
       }
 
-      // Build the full recipient display name from the family config
-      function getRecipientDisplayName(giftTo) {
-        const f = family[giftTo];
-        return [giftTo, ...f.household].join(" & ");
-      }
-
       // Function to generate the gift message
       function generateMessage(giftTo) {
-        return `You should give a gift to ${getRecipientDisplayName(giftTo)}!`;
+        return `You should give a gift to ${giftTo}!`;
       }
 
       // Get URL parameters using modern URLSearchParams API
