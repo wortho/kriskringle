@@ -715,42 +715,96 @@
       // children  – this participant's own children (by first name).
       //             Used to enforce the rule: a parent never gives to their own child.
       const family = {
-        //              household                   children (own – can never receive gift from parent)
-        Alison:   { household: [],           children: [] },
-        Anne:     { household: [],           children: ["Edward", "Lucy"] },   // co-parent: Mark
-        David:    { household: ["Dea"],      children: ["Dea", "Tilly"] },     // partner: Pernille
-        Joanne:   { household: ["Evie"],     children: [] },
-        Karen:    { household: ["Lucy"],     children: ["Hannah"] },            // co-parent: Scott
-        Mark:     { household: ["William"],  children: ["Edward", "Lucy"] },   // co-parent: Anne
-        Mum:      { household: ["Tilly"],    children: [] },
-        Paul:     { household: [],           children: [] },
-        Pernille: { household: [],           children: ["Dea", "Tilly"] },     // partner: David
-        Phil:     { household: [],           children: ["William", "Evie"] },  // partner: Dea; co-parent: Sarah
-        Sarah:    { household: ["Edward"],   children: ["William", "Evie"] },  // co-parent: Phil
-        Scott:    { household: ["Hannah"],   children: ["Hannah"] },            // co-parent: Karen
+        //              partner        household                   children (own – can never receive gift from parent)
+        Alison:   { partner: null,       household: [],           children: [] },
+        Anne:     { partner: null,       household: [],           children: ["Edward", "Lucy"] },  // co-parent: Mark
+        David:    { partner: "Pernille", household: ["Dea"],      children: ["Dea", "Tilly"] },
+        Joanne:   { partner: null,       household: ["Evie"],     children: [] },
+        Karen:    { partner: "Scott",    household: ["Lucy"],     children: ["Hannah"] },
+        Mark:     { partner: null,       household: ["William"],  children: ["Edward", "Lucy"] },  // co-parent: Anne
+        Mum:      { partner: null,       household: ["Tilly"],    children: [] },
+        Paul:     { partner: null,       household: [],           children: [] },
+        Pernille: { partner: "David",    household: [],           children: ["Dea", "Tilly"] },
+        Phil:     { partner: null,       household: [],           children: ["William", "Evie"] }, // partner Dea is not a participant; co-parent: Sarah
+        Sarah:    { partner: null,       household: ["Edward"],   children: ["William", "Evie"] }, // co-parent: Phil
+        Scott:    { partner: "Karen",    household: ["Hannah"],   children: ["Hannah"] },
       };
 
-      // ── Gift assignments ──────────────────────────────────────────────
-      // name   – the participant who receives this URL
-      // giftTo – key into `family` above: who they must buy for
-      // code   – unique URL access code for this participant
-      //
-      // Rule enforced: no participant is assigned a giftTo whose household
-      // contains any of that participant's own children.
-      const presents = {
-        present1:  { name: "Alison",   giftTo: "Pernille", code: "R3M7PK" },
-        present2:  { name: "Anne",     giftTo: "Phil",     code: "W9X4TN" },
-        present3:  { name: "David",    giftTo: "Scott",    code: "L6Q2HV" }, // swapped with Mark (Tilly conflict)
-        present4:  { name: "Joanne",   giftTo: "Sarah",    code: "C8N5JY" },
-        present5:  { name: "Karen",    giftTo: "Joanne",   code: "E1B9KZ" },
-        present6:  { name: "Mark",     giftTo: "Mum",      code: "G4S7UF" }, // swapped with David
-        present7:  { name: "Mum",      giftTo: "David",    code: "D2W8MR" },
-        present8:  { name: "Paul",     giftTo: "Alison",   code: "N5L3QX" },
-        present9:  { name: "Pernille", giftTo: "Anne",     code: "T7C1YP" },
-        present10: { name: "Phil",     giftTo: "Paul",     code: "H6J4AK" },
-        present11: { name: "Sarah",    giftTo: "Karen",    code: "U9E2VB" },
-        present12: { name: "Scott",    giftTo: "Mark",     code: "F3R8WD" },
-      };
+      // ── Participants ──────────────────────────────────────────────────
+      // Stable per-person data: name and unique URL access code.
+      // To start a new year: update YEAR only – assignments are generated
+      // automatically and deterministically from the year as a seed.
+      const YEAR = 2026;
+
+      const participants = [
+        { name: "Alison",   code: "R3M7PK" },
+        { name: "Anne",     code: "W9X4TN" },
+        { name: "David",    code: "L6Q2HV" },
+        { name: "Joanne",   code: "C8N5JY" },
+        { name: "Karen",    code: "E1B9KZ" },
+        { name: "Mark",     code: "G4S7UF" },
+        { name: "Mum",      code: "D2W8MR" },
+        { name: "Paul",     code: "N5L3QX" },
+        { name: "Pernille", code: "T7C1YP" },
+        { name: "Phil",     code: "H6J4AK" },
+        { name: "Sarah",    code: "U9E2VB" },
+        { name: "Scott",    code: "F3R8WD" },
+      ];
+
+      // ── Seeded RNG (mulberry32) ───────────────────────────────────────
+      // Returns a deterministic pseudo-random function for the given seed.
+      function createRng(seed) {
+        return function () {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function seededShuffle(arr, rng) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // ── Assignment validation ─────────────────────────────────────────
+      // Rules checked for every giver → recipient pair:
+      //   1. No self-assignment
+      //   2. Partners don't give to each other
+      //   3. A parent doesn't give to a recipient whose household contains
+      //      any of that parent's own children
+      function isValidAssignment(assignment) {
+        for (const [giver, recipient] of Object.entries(assignment)) {
+          if (giver === recipient) return false;
+          if (family[giver].partner === recipient) return false;
+          const giverChildren = family[giver].children;
+          const recipientHousehold = family[recipient].household;
+          if (giverChildren.some((child) => recipientHousehold.includes(child)))
+            return false;
+        }
+        return true;
+      }
+
+      // ── Gift assignment generator ─────────────────────────────────────
+      // Produces a valid set of gift assignments deterministically from the
+      // year seed. The same year always yields the same assignments.
+      function assignGifts(year) {
+        const rng = createRng(year);
+        const names = participants.map((p) => p.name);
+        for (let attempt = 0; attempt < 10000; attempt++) {
+          const shuffled = seededShuffle(names, rng);
+          const assignment = Object.fromEntries(
+            names.map((name, i) => [name, shuffled[i]])
+          );
+          if (isValidAssignment(assignment)) return assignment;
+        }
+        throw new Error(`No valid gift assignment found for year ${year}`);
+      }
 
       // Build the full recipient display name from the family config
       function getRecipientDisplayName(giftTo) {
@@ -772,36 +826,34 @@
       // Check access and initialize page
       function initializePage() {
         const userCode = getUrlParameter("code");
-        const authorizedPresent = Object.entries(presents).find(
-          ([_, present]) => present.code === userCode
-        );
+        const participant = participants.find((p) => p.code === userCode);
 
-        if (authorizedPresent) {
-          showAuthorizedPresent(authorizedPresent[0]); // presentId
+        if (participant) {
+          const assignments = assignGifts(YEAR);
+          showAuthorizedPresent(participant, assignments[participant.name]);
         } else {
           showAccessDenied();
         }
       }
 
-      function showAuthorizedPresent(presentId) {
-        const present = presents[presentId];
-
-        // Update the present with user's information
+      function showAuthorizedPresent(participant, giftTo) {
         const presentName = document.getElementById("presentName");
         const presentBox = document.getElementById("presentBox");
 
-        presentName.textContent = present.name;
-        presentBox.className = `present-box ${getPresentColor(presentId)}`;
+        presentName.textContent = participant.name;
+        const index = participants.findIndex((p) => p.name === participant.name);
+        presentBox.className = `present-box ${getPresentColor(index)}`;
 
-        // Store the present ID for opening using dataset API
-        document.getElementById("userPresent").dataset.presentId = presentId;
+        // Store assignment for use when the present is opened
+        document.getElementById("userPresent").dataset.participantName =
+          participant.name;
+        document.getElementById("userPresent").dataset.giftTo = giftTo;
 
-        // Show the presents area and hide access denied
         document.getElementById("presentsArea").classList.remove("hidden");
         document.getElementById("accessDenied").classList.add("hidden");
       }
 
-      function getPresentColor(presentId) {
+      function getPresentColor(index) {
         const colors = [
           "red",
           "green",
@@ -816,7 +868,6 @@
           "cyan",
           "brown",
         ];
-        const index = parseInt(presentId.replace("present", "")) - 1;
         return colors[index % colors.length];
       }
 
@@ -828,14 +879,14 @@
 
       function openPresent() {
         const presentElement = document.getElementById("userPresent");
-        const presentId = presentElement.dataset.presentId; // Use dataset API
-        const present = presents[presentId];
+        const participantName = presentElement.dataset.participantName;
+        const giftTo = presentElement.dataset.giftTo;
         const modal = document.getElementById("presentModal");
         const modalTitle = document.getElementById("modalTitle");
         const revealedName = document.getElementById("revealedName");
 
-        modalTitle.textContent = present.name;
-        revealedName.textContent = generateMessage(present.giftTo);
+        modalTitle.textContent = participantName;
+        revealedName.textContent = generateMessage(giftTo);
 
         modal.style.display = "block";
 
