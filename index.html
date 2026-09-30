@@ -719,13 +719,17 @@
         { adults: ["Joanne", "Paul"],    children: []                   },
         { adults: ["Karen", "Scott"],    children: ["Hannah"]           },
         { adults: ["Alison"],            children: []                   },
-        { adults: ["Mum"],               children: []                   },
+        { adults: ["Margaret"],          children: []                   },
       ];
 
       // Fast lookup: participant name → household object
       const householdOf = Object.fromEntries(
         households.flatMap(h => h.adults.map(a => [a, h]))
       );
+
+      // ── Special rules ─────────────────────────────────────────────────
+      const CHILD_ONLY_ADULT = "Alison"; // excluded from the adult<->adult exchange
+      const CHILD_GIVERS = ["David", "Mark", "Joanne", "Alison", "Karen", "Sarah", "Margaret"]; // only these give to kids
 
       // ── Participants ──────────────────────────────────────────────────
       // Stable per-person data: name and unique URL access code.
@@ -740,7 +744,7 @@
         { name: "Joanne",   code: "C8N5JY" },
         { name: "Karen",    code: "E1B9KZ" },
         { name: "Mark",     code: "G4S7UF" },
-        { name: "Mum",      code: "D2W8MR" },
+        { name: "Margaret", code: "D2W8MR" },
         { name: "Paul",     code: "N5L3QX" },
         { name: "Pernille", code: "T7C1YP" },
         { name: "Phil",     code: "H6J4AK" },
@@ -784,7 +788,9 @@
       // year seed. The same year always yields the same assignments.
       function assignGifts(year) {
         const rng = createRng(year);
-        const names = participants.map((p) => p.name);
+        const names = participants
+          .map((p) => p.name)
+          .filter((name) => name !== CHILD_ONLY_ADULT);
         for (let attempt = 0; attempt < 10000; attempt++) {
           const shuffled = seededShuffle(names, rng);
           const assignment = Object.fromEntries(
@@ -804,21 +810,22 @@
         const children = households.flatMap(h =>
           h.children.map(c => ({ name: c, household: h }))
         );
-        const shuffledChildren = seededShuffle(children, rng);
-        const shuffledAdults = seededShuffle(participants.map(p => p.name), rng);
+        const childNames = children.map((c) => c.name);
+        const childHouseholdOf = Object.fromEntries(
+          children.map((c) => [c.name, c.household])
+        );
 
-        const childAssignment = {};
-        const assignedAdults = new Set();
-        for (const child of shuffledChildren) {
-          for (const adult of shuffledAdults) {
-            if (!assignedAdults.has(adult) && householdOf[adult] !== child.household) {
-              childAssignment[adult] = child.name;
-              assignedAdults.add(adult);
-              break;
-            }
-          }
+        for (let attempt = 0; attempt < 10000; attempt++) {
+          const shuffledChildren = seededShuffle(childNames, rng);
+          const assignment = Object.fromEntries(
+            CHILD_GIVERS.map((adult, i) => [adult, shuffledChildren[i]])
+          );
+          const valid = CHILD_GIVERS.every(
+            (adult) => householdOf[adult] !== childHouseholdOf[assignment[adult]]
+          );
+          if (valid) return assignment;
         }
-        return childAssignment;
+        throw new Error(`No valid child gift assignment found for year ${year}`);
       }
 
       // Function to generate the gift message
@@ -860,7 +867,7 @@
         // Store assignment for use when the present is opened
         document.getElementById("userPresent").dataset.participantName =
           participant.name;
-        document.getElementById("userPresent").dataset.giftTo = giftTo;
+        document.getElementById("userPresent").dataset.giftTo = giftTo || "";
         document.getElementById("userPresent").dataset.childGiftTo = childGiftTo;
 
         document.getElementById("presentsArea").classList.remove("hidden");
@@ -902,7 +909,7 @@
         const childRevealedName = document.getElementById("childRevealedName");
 
         modalTitle.textContent = participantName;
-        revealedName.textContent = generateMessage(giftTo);
+        revealedName.textContent = giftTo ? generateMessage(giftTo) : "";
         childRevealedName.textContent = childGiftTo
           ? `You should also give a gift to ${childGiftTo}!`
           : "";
